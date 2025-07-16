@@ -18,9 +18,16 @@ browsers). <br>
 
 # Task Steps 
 # 1. Resource Group <br> 
-  a. Create Resource group “armtask” using command  
-    ▪ az group create –name “armtask” –location “Canada Central” 
-# 2. Template Deployment  
-  a. Create a new instance of Azure Cli and upload the arm1.json file which contains the template code 
-  b. Run the following command to deploy the template 
-    ▪ az deployment group create –resource-group “armtask” –template-file “arm1.json”
+  a. Create Resource group “armtask” using command  <br>
+    ▪ az group create –name “armtask” –location “Canada Central” <br>
+# 2. Template Deployment <br>
+  a. Create a new instance of Azure Cli and upload the arm1.json file which contains the template code <br>
+  b. Run the following command to deploy the template <br>
+    ▪ az deployment group create –resource-group “armtask” –template-file “arm1.json” <br>
+# 3. Post Deployment <br>
+  a. Open Policy resource in Azure <br>
+  b. Search for the definition named “Require a tag and its value on resources’ <br>
+  c. Assign this policy to scope  <br>
+    ▪ Subscription: Azure Students <br>
+    ▪ Resource Group: armtask <br>
+    
