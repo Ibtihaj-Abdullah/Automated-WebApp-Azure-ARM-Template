@@ -1,0 +1,231 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "Canada Central",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "defaultValue": "app2-service",
+      "metadata": {
+        "description": "Name of the App Service Plan."
+      }
+    },
+    "appServiceName": {
+      "type": "string",
+      "defaultValue": "app-task2",
+      "metadata": {
+        "description": "Name of the App Service."
+      }
+    },
+    "mysqlServerName": {
+      "type": "string",
+      "defaultValue": "server-task2",
+      "metadata": {
+        "description": "Name of the MySQL Flexible Server."
+      }
+    },
+    "mysqlDatabaseName": {
+      "type": "string",
+      "defaultValue": "database-task2",
+      "metadata": {
+        "description": "Name of the MySQL Database."
+      }
+    },
+    "mysqlAdminUsername": {
+      "type": "string",
+      "defaultValue": "mysqlAdmin",
+      "metadata": {
+        "description": "Admin username for MySQL Server."
+      }
+    },
+    "mysqlAdminPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Admin password for MySQL Server."
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "storagetask2",
+      "metadata": {
+        "description": "Name of the Storage Account."
+      }
+    },
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "myVNet",
+      "metadata": {
+        "description": "Name of the Virtual Network."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "mySubnet",
+      "metadata": {
+        "description": "Name of the subnet in the Virtual Network."
+      }
+    },
+    "nsgName": {
+      "type": "string",
+      "defaultValue": "myNetworkSecurityGroup",
+      "metadata": {
+        "description": "Name of the Network Security Group."
+      }
+    },
+    "resourceTags": {
+      "type": "object",
+      "defaultValue": {
+        "Environment": "Test Project",
+        "Owner": "Ebtihaj",
+        "Project": "ARMDeployment"
+      },
+      "metadata": {
+        "description": "Tags to apply to all resources."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "B1",
+        "tier": "Basic"
+      },
+      "properties": {
+        "reserved": true
+      },
+      "tags": "[parameters('resourceTags')]"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('appServiceName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      },
+      "tags": "[parameters('resourceTags')]"
+    },
+    {
+      "type": "Microsoft.DBforMySQL/flexibleServers",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('mysqlServerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "[parameters('mysqlAdminUsername')]",
+        "administratorLoginPassword": "[parameters('mysqlAdminPassword')]",
+        "version": "5.7",
+        "storage": {
+          "storageSizeGB": 32
+        }
+      },
+      "resources": [
+        {
+          "type": "databases",
+          "apiVersion": "2021-05-01",
+          "name": "[parameters('mysqlDatabaseName')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('mysqlServerName'))]"
+          ],
+          "properties": {
+            "charset": "utf8",
+            "collation": "utf8_general_ci"
+          }
+        }
+      ],
+      "tags": "[parameters('resourceTags')]"
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {},
+      "tags": "[parameters('resourceTags')]"
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('vnetName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnetName')]",
+            "properties": {
+              "addressPrefix": "10.0.1.0/24"
+            }
+          }
+        ]
+      },
+      "tags": "[parameters('resourceTags')]"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('nsgName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowPort80",
+            "properties": {
+              "priority": 100,
+              "protocol": "*",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "80"
+            }
+          },
+          {
+            "name": "AllowPort443",
+            "properties": {
+              "priority": 200,
+              "protocol": "*",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "443"
+            }
+          }
+        ]
+      },
+      "tags": "[parameters('resourceTags')]"
+    }
+  ],
+  "outputs": {
+    "appServiceUrl": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appServiceName'))).defaultHostName]",
+      "metadata": {
+        "description": "The URL of the deployed App Service."
+      }
+    }
+  }
+}
