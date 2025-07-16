@@ -15,3 +15,12 @@ This is a ARM Template code to deploy a basic app on Azure using App Service <br
 ▪ Define an NSG deployment in the code to add two inbound traffic rules to allow traffic inbound at port 443 and port 80 (necessary to access the website through 
 browsers). <br>
 ▪ Also parameterized the properties to allow custom service for all protocols.
+
+# Task Steps 
+# 1. Resource Group <br> 
+  a. Create Resource group “armtask” using command  
+    ▪ az group create –name “armtask” –location “Canada Central” 
+# 2. Template Deployment  
+  a. Create a new instance of Azure Cli and upload the arm1.json file which contains the template code 
+  b. Run the following command to deploy the template 
+    ▪ az deployment group create –resource-group “armtask” –template-file “arm1.json”
