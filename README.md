@@ -25,7 +25,7 @@ This is an ARM Template code to deploy a basic app on Azure using App Service.
    a. Create a new instance of Azure CLI and upload the `arm1.json` file which contains the template code.
    b. Run the following command to deploy the template:
       ```bash
-      az deployment group create --resource-group "armtask" --template-file "arm1.json"
+      az deployment group create --resource-group "armtask" --template-file "template_code.json"
       ```
 ## 3. Post Deployment
    a. Open Policy resource in Azure.
