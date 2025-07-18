@@ -17,19 +17,19 @@ This is an ARM Template code to deploy a basic app on Azure using App Service.
 
 # Task Steps
 ## 1. Resource Group
-   a. Create Resource group "armtask" using command:
+ * a. Create Resource group "armtask" using command:
       ```bash
       az group create --name "armtask" --location "Canada Central"
       ```
 ## 2. Template Deployment
-   a. Create a new instance of Azure CLI and upload the `arm1.json` file which contains the template code.
-   b. Run the following command to deploy the template:
+ * a. Create a new instance of Azure CLI and upload the `arm1.json` file which contains the template code.
+ * b. Run the following command to deploy the template:
       ```bash
       az deployment group create --resource-group "armtask" --template-file "template_code.json"
       ```
 ## 3. Post Deployment
-   a. Open Policy resource in Azure.
-   b. Search for the definition named "Require a tag and its value on resources."
-   c. Assign this policy to scope:
+ * a. Open Policy resource in Azure.
+ * b. Search for the definition named "Require a tag and its value on resources."
+ * c. Assign this policy to scope:
       * Subscription: Azure Students
       * Resource Group: armtask
